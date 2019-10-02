@@ -1,0 +1,47 @@
+h1 {
+    color: white !important;
+    font-size: 1.5em;
+    font-weight: 300;
+    text-align: center;
+    text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.15);
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 400;
+}
+
+.weather {
+    width: auto;
+    margin: 0.5% auto;
+    position: absolute;
+    top: 65%;
+    left: 40%;
+    display: flex;
+}
+
+input[type=text] {
+    text-transform: uppercase;
+    padding: 12px 20px;
+    font-size: 1em;
+    margin-right: 5%;
+    color: black;
+    border-top-style: dotted;
+    border-right-style: dotted;
+    border-bottom-style: dotted;
+    border-left-style: dotted;
+}
+
+input:focus {
+    outline: 0;
+    border: none;
+    border-bottom: solid 1px black !important;
+}
+
+input::placeholder {
+    font-size: 0.7em;
+}
+
+button:hover {
+    cursor: grab;
+}

@@ -1,0 +1,32 @@
+<html>
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Acme" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <script src="./scripts_css/script.js"></script>
+    <style>
+        body {
+            background-image: url('./images/bg.jpg');
+            background-repeat: repeat-x;
+            background-size: 100% 50%;
+            font-family: 'Acme';
+        }
+    </style>
+
+
+    <link rel="stylesheet" type="text/css" href="./scripts_css/style.css" media="screen" />
+</head>
+
+<body>
+    <h1> What's the weather like?</h1>
+    <div id="weather" class="weather">
+        <input type="text" id="location" placeholder="zipcode" required>
+        <button disabled type="button" id="check" class="btn btn-info" onclick="buttonClicked()">GO!!</button>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,256 @@
+<html>
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Acme" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <script src="./scripts_css/script.js"></script>
+    <link rel="stylesheet" type="text/css" href="./scripts_css/style.css" media="screen" />
+
+    <style>
+        body {
+            background-image: url('./images/bg.jpg');
+            background-repeat: repeat-x;
+            background-size: 100% 30%;
+            font-family: 'Acme';
+            width: 100%
+        }
+
+        h1 {
+            top: 25%;
+        }
+
+        h6 {
+            text-align: center;
+        }
+
+        p {
+            font-size: 0.8em;
+            padding: 10px;
+        }
+
+        .row::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        .row {
+            display: flex;
+            margin-left: 1.5%;
+            margin-right: 1.5%
+        }
+
+        .column {
+            flex: 20%;
+            padding: 5px;
+            border: 1px solid black
+        }
+
+        .clearfix {
+            overflow: auto;
+            margin-left: 20%
+        }
+
+        img {
+            float: left;
+        }
+
+        .togglethis {
+            flex: 20% !important;
+            position: relative;
+            background-color: gray;
+        }
+
+        #toggleContent {
+            padding: 15px;
+            width: 20%;
+            font-size: 20px;
+            display: none;
+            border: 1px solid black;
+            text-align: left;
+        }
+
+        .toggle {
+            padding: 0px !important
+        }
+
+        .image {
+            width: 50px;
+        }
+
+        .minmax {
+            text-align: center;
+            bottom: 5px;
+            left: 45px;
+        }
+    </style>
+
+
+</head>
+
+<body id="body_function">
+    <div>
+        <h1> </h1>
+    </div>
+
+    <div class="row" id="content">
+        <div id="toggleContent">
+            <p class="toggle">Humidity : <span id="humid"></span></p>
+            <p class="toggle">Pressure : <span id="pressure"></span></p>
+            <p class="toggle">Wind : <span id="wind"></span></p>
+            <p class="toggle">Clouds : <span id="cloud"></span></p>
+            <p class="toggle">Weather : <span id="todaysweather"></span></p>
+        </div>
+    </div>
+
+
+
+    <script>
+        function createHTMLElements() {
+            let count = sessionStorage.getItem('count');
+            var i = 0;
+            while (i < count) {
+                var maindiv = document.createElement('div');
+                maindiv.className = "column togglethis";
+
+                var header = document.createElement('h6');
+                var title = "title" + i;
+                header.setAttribute("id", title);
+                maindiv.appendChild(header);
+
+                var subdiv = document.createElement('div');
+                subdiv.className = "clearfix";
+                var image = document.createElement('img');
+                var img = "img" + i;
+                image.setAttribute("id", img);
+                image.className = "image";
+                subdiv.appendChild(image);
+                var pw = document.createElement('p');
+                var pid = "weather" + i;
+                pw.setAttribute("id", pid);
+                subdiv.appendChild(pw);
+                maindiv.appendChild(subdiv);
+
+                var pminmax = document.createElement('p');
+                pminmax.className = "minmax";
+                var pmid = "mixmaxtemp" + i;
+                pminmax.setAttribute("id", pmid);
+                maindiv.appendChild(pminmax);
+
+                document.getElementById('content').append(maindiv);
+
+                i += 8;
+            }
+            var detaildiv = document.getElementById('toggleContent');
+            document.getElementById('content').append(detaildiv);
+
+        }
+        $(window).on('resize', function (event) {
+            //Setting the top margin of the table on window resize
+            var height = (($(window).height() * 30) / 100) + 20;
+            $('#content').css({
+                "margin-top": height
+            })
+        });
+        $(document).ready(function () {
+            createHTMLElements();
+
+            let loc = JSON.parse(sessionStorage.getItem('location'));
+            let weatherData = JSON.parse(sessionStorage.getItem('weather'));
+            let count = sessionStorage.getItem('count');
+
+            //Setting the top margin of the table
+            var height = (($(window).height() * 30) / 100) + 20;
+            $('#content').css({
+                "margin-top": height
+            })
+
+            //Getting the details from the session variable
+            var details = getDateObj(loc[1]['sunrise'])
+            var timeZone = details[6] + " " + details[7] + " " + details[8];
+            $('h1').text(loc[1]['name'] + " , " + loc[1]['country'] + " " + timeZone);
+
+            var i = 0;
+            while (i < count) {
+                var weather_date = date(weatherData[1][i]['dt_txt'])
+                $(`#title${i}`).text(weather_date[0] + " - " + weather_date[1] + " " + weather_date[2]);
+                $(`#weather${i}`).text(weatherData[1][i]['weather'][0]['description']);
+                var img_src = "http://openweathermap.org/img/wn/" + weatherData[1][i]['weather'][0]['icon'] +
+                    "@2x.png"
+                $(`#img${i}`).attr("src", img_src);
+                var maxtemp = kelvinToCelsius(weatherData[1][i]['main']['temp_max']).toFixed(2);
+                var mintemp = kelvinToCelsius(weatherData[1][i]['main']['temp_min']).toFixed(2);
+                $(`#mixmaxtemp${i}`).text(mintemp + " - " + maxtemp);
+                i += 8;
+            }
+
+            $('.togglethis').hover(mouseenter, mouseout);
+            $('.togglethis').click(showMoreDetails)
+
+        })
+
+
+        function getDateObj(obj) {
+            var myDate = new Date(1000 * obj);
+            var timeZone = myDate.toString().split(" ");
+            return timeZone;
+        }
+
+        function date(date) {
+            let m = moment();
+            m = moment(date);
+            var dates = m['_d'].toString().split(" ");
+            return dates;
+        }
+
+        function kelvinToCelsius(temp) {
+            return temp - 273.15;
+        }
+
+        function showMoreDetails() {
+            var parentPos = $(this).position().left;
+            let weatherData = JSON.parse(sessionStorage.getItem('weather'));
+            var obj = Object.entries($(this));
+            $('#toggleContent').slideDown();
+
+            var id = (obj[0][1]['children'][0]['id']).substring(5);
+            $('#humid').text(weatherData[1][id]['main']['humidity'] + "%");
+            $('#pressure').text(weatherData[1][id]['main']['pressure'] + " hPa");
+            $('#wind').text(weatherData[1][id]['wind']['speed'] + " m/sec");
+            $('#cloud').text(weatherData[1][id]['clouds']['all'] + "%");
+            var w = weatherData[1][id]['weather'][0]['main']
+            $('#todaysweather').text(w);
+            var imgsrc = 'url(./images/' + w.toLowerCase() + ".gif)"
+
+            $('#toggleContent').css({
+                "margin-left": parentPos - 20,
+                "background-image": imgsrc,
+                "background-size": "100% 100%",
+                "background-repeat": "no-repeat",
+                "color": "floralwhite"
+            })
+        }
+
+        function mouseenter() {
+            console.log($(this));
+            $(this).css({
+                "cursor": "grab",
+                "background-color": "lightgrey"
+            })
+        }
+
+        function mouseout() {
+            console.log("hover out");
+            $(this).css({
+                "cursor": "grab",
+                "background-color": "gray"
+            })
+        }
+    </script>
+</body>
+
+</html>
